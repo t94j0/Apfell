@@ -12,12 +12,6 @@ else
 fi
 # Mac specific config setup
 if [[ "$(uname)" == "Darwin" ]]; then
-    if ! which brew > /dev/null; then
-        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    fi
-    brew install postgres
-    pg_ctl -D /usr/local/var/postgres start
-    initdb /usr/local/var/postgres
     createdb apfell_db
     psql -S apfell_db<<EOF
 create user apfell_user password '$db_pass'
@@ -27,13 +21,6 @@ GRANT ALL PRIVILEGES ON DATABASE apfell_db TO apfell_user
 EOF
     sed 's/local   all             all                                     trust/local   all             all                                     md5/g' -i /usr/local/var/postgres/pg_hba.conf
     pg_ctl -D /usr/local/var/postgres restart
-
-    if ! which python3 > /dev/null; then
-        brew install python3
-    fi
-    if ! which pip3 > /dev/null; then
-        brew install pip3
-    fi
 elif [[ $EUID -ne 0 ]]; then
    echo -e "\n[-] This script must be run as root!\n"
    exit 1
